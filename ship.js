@@ -5,7 +5,7 @@ class Ship {
     // Front speed parameters
     this.speedX = 0;
     this.speedY = 0;
-    this.maxSpeed = 4;
+    this.maxSpeed = 3;
     this.speedingUp = false;
     // Turn parameters
     this.radian = 0;

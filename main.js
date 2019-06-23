@@ -2,8 +2,10 @@ let game = {
   space: new Space(),
   ship: 0,
   img: [new Image(), new Image()],
+  asteroidBelt: [],
   interval: 0,
   frames: 0,
+  randomCounter: 0,
 };
 
 const startGame = () => {
@@ -20,18 +22,62 @@ const startGame = () => {
       game.img
       );
       game.space.bigBang();
+      game.frames = 400;
+      for (let x = 0; x < 5; x += 1){
+        createNewAsteroid();
+      }
+      game.frames = 0;
       game.interval = setInterval(() => {
         animateIt();
         game.frames += 1;
       }, 15);
     };
-  }
+  };
+  
+  const createNewAsteroid = () => {
+    let randomSize = Math.floor(Math.random() * (100 - 20) + 20);
+    let randomX = Math.floor(Math.random() * game.space.canvas.width);
+    let randomY = Math.floor(Math.random() * game.space.canvas.height);
+    let randomSpeedX = 0;
+    let randomSpeedY = 0;
+    let luckyDirection = Math.random() < 0.5 ? -1 : 1;
+    
+    if (game.randomCounter === 0) {
+      if (randomX < game.space.canvas.width / 2) {
+        randomX = 0 - randomSize;
+        randomSpeedX = Math.random() * (1 - 0.5) + 0.5;
+        randomSpeedY = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
+      } else {
+        randomX = game.space.canvas.width + randomSize;
+        randomSpeedX = -(Math.random() * (1 - 0.5) + 0.5);
+        randomSpeedY = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
+      }
+      game.randomCounter = 1;
+    } else {
+      if (randomY < game.space.canvas.height / 1) {
+        randomY = 0 - randomSize;
+        randomSpeedY = Math.random() * (1 - 0.5) + 0.5;
+        randomSpeedX = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
+      } else {
+        randomY = game.space.canvas.height + randomSize;
+        randomSpeedY = -(Math.random() * (1 - 0.5) + 0.5);
+        randomSpeedX = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
+      }
+      game.randomCounter = 0;
+    }      
+    game.asteroidBelt.push(new Asteroid(randomX, randomY, randomSpeedX, randomSpeedY, randomSize, game.space.ctx));  
+  };
+  
   
   const animateIt = () => {
     game.space.wipeOut();
     game.ship.update();
-    game.asteroid.createNew();
-    game.asteroid.update();
+    if (game.frames % 400 == 0) {
+      for (let x = 0; x < 5; x += 1){
+        createNewAsteroid();
+      }
+    }
+    game.asteroidBelt.forEach(asteroid => asteroid.update());
   }
   
   startGame();
@@ -46,7 +92,7 @@ const startGame = () => {
       case 87: // "W" 
       case 38: // ARROW UP
       clearInterval(game.ship.inertiaInterval);
-      game.ship.fireThruster(1);
+      game.ship.fireThruster(0.7);
       break;
       case 68: // "D"
       case 39: // ARROW RIGHT
