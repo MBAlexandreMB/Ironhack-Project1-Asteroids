@@ -1,7 +1,8 @@
 let game = {
   space: new Space(),
   ship: 0,
-  img: [new Image(), new Image()],
+  shipImgs: [new Image(), new Image()],
+  asteroidImg: new Image(),
   asteroidBelt: [],
   interval: 0,
   frames: 0,
@@ -9,17 +10,18 @@ let game = {
 };
 
 const startGame = () => {
-  game.img[0].src = './images/ship.png';
-  game.img[0].alt = 'spaceship by Zach Bogart from the Noun Project';
-  game.img[1].src = './images/shipwfire.png'
-  game.img[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
-  game.img[0].onload = () => {
+  game.shipImgs[0].src = './images/ship.png';
+  game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
+  game.shipImgs[1].src = './images/shipwfire.png'
+  game.shipImgs[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
+  game.asteroidImg.src = './images/asteroid.png';
+  game.shipImgs[0].onload = () => {
     game.ship = new Ship(
       game.space.canvas.width / 2, 
       game.space.canvas.height / 2, 
       game.space.canvas,
       game.space.ctx, 
-      game.img
+      game.shipImgs
       );
       game.space.bigBang();
       game.frames = 400;
@@ -65,7 +67,15 @@ const startGame = () => {
       }
       game.randomCounter = 0;
     }      
-    game.asteroidBelt.push(new Asteroid(randomX, randomY, randomSpeedX, randomSpeedY, randomSize, game.space.ctx));  
+    game.asteroidBelt.push(new Asteroid(
+      randomX, 
+      randomY, 
+      randomSpeedX, 
+      randomSpeedY, 
+      randomSize, 
+      game.space.canvas,
+      game.space.ctx, 
+      game.asteroidImg));  
   };
   
   
@@ -77,7 +87,10 @@ const startGame = () => {
         createNewAsteroid();
       }
     }
-    game.asteroidBelt.forEach(asteroid => asteroid.update());
+    game.asteroidBelt.forEach((asteroid, index) => { 
+      asteroid.update(); 
+      asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false; 
+    });
   }
   
   startGame();
