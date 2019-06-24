@@ -8,39 +8,34 @@ class Ship {
     this.maxSpeed = 3;
     this.speedingUp = false;
     // Turn parameters
-    this.radian = 0;
+    this.degree = 0;
     this.turnSpeed = 0;
-    this.maxTurnSpeed = 0.0475;
+    this.maxTurnSpeed = 15;
     
     this.width = 25;
     this.height = 25;
-    this.perimeter = (2 * Math.PI) * (this.width / 2);
+    // this.perimeter = (2 * Math.PI) * (this.width / 2);
     this.gameCanvas = canvas;
     this.ctx = canvasContext;
     this.img = image;
     this.inertiaInterval = 0;
+
+    this.sizeX = this.width / 2;
+    this.sizeY = this.height / 2;
   }
   
   update() {
     this.move();
     this.ctx.save();    
-    // move to the center of the canvas
-    this.ctx.translate(this.x + this.width / 2 - 13, this.y + this.height / 2 - 13);
-    // rotate the canvas to the specified degrees
-    this.ctx.rotate(this.radian*Math.PI);
-    // draw the image
-    // since the ctx is rotated, the image will be rotated also
+    this.ctx.translate(this.x - 12.5, this.y - 12.5);
+    this.ctx.rotate(this.degree * Math.PI / 180);
+
     if (this.speedingUp === false) {
-      this.ctx.drawImage(this.img[0], 0, 0, this.width, this.height);
+      this.ctx.drawImage(this.img[0],  -12.5, -12.5, this.width, this.height);
     } else {
-      this.ctx.drawImage(this.img[1], 0, 0, this.width, this.height + 9);
+      this.ctx.drawImage(this.img[1], -12.5, -12.5, this.width, this.height + 9);
     }
-    // if (this.speedingUp === false) {
-    //   this.ctx.drawImage(this.img[0], this.x, this.y, this.width, this.height);
-    // } else {
-    //   this.ctx.drawImage(this.img[1], this.x, this.y, this.width, this.height + 9);
-    // }
-    // we’re done with the rotating so restore the unrotated ctx
+
     this.ctx.restore();
   }
   
@@ -71,20 +66,13 @@ class Ship {
     } else { 
       this.turnSpeed += value;
     }
-    
-    // Corrige os degrees
-    if (this.radian + this.turnSpeed > 1.99999999) {
-      this.radian = 0;
-    } else if (this.radian + this.turnSpeed < 0) {
-      this.radian = 1.99999999;
-    } else {
-      this.radian += this.turnSpeed;
-    }
+
+    this.degree += this.turnSpeed;
   }
   
   fireThruster(value) {
     this.speedingUp = true;
-    let radian = this.radian * Math.PI;
+    let radian = this.degree * Math.PI / 180;
     let seno = Math.sin(radian);
     let cosseno = Math.cos(radian);
     
@@ -107,6 +95,8 @@ class Ship {
   
   inertia() {
     this.speedingUp = false;
+    // this.speedX = 0;
+    // this.speedY = 0;
     //   let stopCounter = 0;
     //   this.inertiaInterval = setInterval(() => {
     //     if (this.speedX > 0) {
@@ -134,24 +124,22 @@ class Ship {
   }
 
   checkForImpact(asteroid) {
-    let sizeX = this.width / 2;
-    let sizeY = this.height / 2;
-    let x = this.x + (sizeX * -Math.cos(this.radian));
-    let y = this.y - (sizeY * Math.sin(this.radian));
-
+    let x = this.x - 12.5;
+    let y = this.y - 12.5;
     let astXSized = asteroid.x + asteroid.size;
     let astYSized = asteroid.y + asteroid.size;
 
-    // Se o x + size de um asteroid tocar o x - size da nave
-    // Ou se o x de um asteroid tocar o x + size da nave
-    if ((x - sizeX < astXSized && x - sizeX > asteroid.x) || 
-    (x + sizeX > asteroid.x && x + sizeX < astXSized)) {
-
-      if ((y - sizeY < astYSized && y - sizeY > asteroid.y) || 
-      (y + sizeY > asteroid.y && y + sizeY < astYSized)) {
+    if (x + 12.5 > asteroid.x && x - 12.5 < astXSized) {
+      if(y + 12.5 < astYSized && y - 12.5 > asteroid.y) {
+        // console.log(this, '\n', asteroid);
         return true;
       }
     }
+  
     return false;
+  }
+
+  pewPewPew() {
+    return new Shot(this.x - 12.5, this.y - 12.5, this.degree, this.gameCanvas, this.ctx);
   }
 }

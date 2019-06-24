@@ -6,7 +6,7 @@ class Asteroid {
     this.speedY = speedY;
     this.size = size;
     this.set = false;
-    this.canvas = canvas;
+    this.gameCanvas = canvas;
     this.ctx = canvasContext;
     this.img = img;
   }
@@ -27,9 +27,9 @@ class Asteroid {
   }
 
   remove() {
-    if (this.x > this.canvas.width ||
+    if (this.x > this.gameCanvas.width ||
       this.x + this.size < 0 ||
-      this.y > this.canvas.height ||
+      this.y > this.gameCanvas.height ||
       this.y + this.size < 0) {
         return true;
       }

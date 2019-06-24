@@ -4,21 +4,22 @@ let game = {
   shipImgs: [new Image(), new Image()],
   asteroidImg: [new Image(), new Image()],
   asteroidBelt: [],
+  shots: [],
   interval: 0,
   frames: 0,
   randomCounter: 0,
 };
 
 const startGame = () => {
-  // game.shipImgs[0].src = './images/shipr.png';
-  game.shipImgs[0].src = './images/shipback.png';
+  game.shipImgs[0].src = './images/shipr.png';
+  // game.shipImgs[0].src = './images/shipback.png';
   game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
   game.shipImgs[1].src = './images/shipwfirer.png'
   game.shipImgs[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
-  // game.asteroidImg[0].src = './images/Asteroid1.png';
-  // game.asteroidImg[1].src = './images/Asteroid2.png';
-  game.asteroidImg[0].src = './images/Asteroid1back.png';
-  game.asteroidImg[1].src = './images/Asteroid2back.png';
+  game.asteroidImg[0].src = './images/Asteroid1.png';
+  game.asteroidImg[1].src = './images/Asteroid2.png';
+  // game.asteroidImg[0].src = './images/Asteroid1back.png';
+  // game.asteroidImg[1].src = './images/Asteroid2back.png';
   game.shipImgs[0].onload = () => {
     game.ship = new Ship(
       game.space.canvas.width / 2, 
@@ -45,7 +46,7 @@ const startGame = () => {
   };
   
   const createNewAsteroid = () => {
-    let randomSize = Math.floor(Math.random() * (100 - 20) + 20);
+    let randomSize = Math.floor(Math.random() * (100 - 35) + 35);
     let randomX = Math.floor(Math.random() * game.space.canvas.width);
     let randomY = Math.floor(Math.random() * game.space.canvas.height);
     let randomSpeedX = 0;
@@ -84,70 +85,76 @@ const startGame = () => {
       game.space.canvas,
       game.space.ctx, 
       game.asteroidImg[Math.floor(Math.random() * 2)]));  
-  };
-  
-  
-  const animateIt = () => {
-    game.space.wipeOut();
-    game.space.setBackground();
-    // game.space.setLines();
-    game.ship.update();
-    if (game.frames % 400 == 0) {
-      for (let x = 0; x < 5; x += 1){
-        createNewAsteroid();
+    };
+    
+    
+    const animateIt = () => {
+      game.space.wipeOut();
+      game.space.setBackground();
+      // game.space.setLines();
+      game.ship.update();
+      if (game.frames % 400 == 0) {
+        for (let x = 0; x < 5; x += 1){
+          createNewAsteroid();
+        }
       }
-    }
-    game.asteroidBelt.forEach((asteroid, index) => { 
-      asteroid.update(); 
-      asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false;
-      game.ship.checkForImpact(asteroid) ? gameOver() : false; 
-    });
-  }
+      game.asteroidBelt.forEach((asteroid, index) => { 
+        asteroid.update(); 
+        asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false;
+        game.ship.checkForImpact(asteroid) ? gameOver() : false; 
+      });
 
-  const gameOver = () => {
-    clearInterval(game.interval);
-  }
-  
-  startGame();
-  
-  document.onkeydown = (e) => {
-    switch(e.keyCode) {
-      case 65: // "A"
-      case 37: // ARROW LEFT 
-      clearInterval(game.ship.inertiaInterval);
-      game.ship.fireTurnThruster(-0.0375 * Math.PI);
-      break;
-      case 87: // "W" 
-      case 38: // ARROW UP
-      clearInterval(game.ship.inertiaInterval);
-      game.ship.fireThruster(0.7);
-      break;
-      case 68: // "D"
-      case 39: // ARROW RIGHT
-      clearInterval(game.ship.inertiaInterval);
-      game.ship.fireTurnThruster(0.0375 * Math.PI);
-      break;
-      // case 83: // "S"
-      // case 40: // ARROW DOWN
-      //   game.ship.fireThruster(1);
-      //   break;
-      default:
-      break;
+      game.shots.forEach((shot, index) => {
+        shot.update();
+        shot.remove() ? game.shots.splice(index, 1) : false;
+      });
     }
-  };
-  
-  document.onkeyup = (e) => {
-    switch(e.keyCode) {
-      case 65: // "A"
-      case 37: // ARROW LEFT 
-      case 87: // "W" 
-      case 38: // ARROW UP
-      case 68: // "D"
-      case 39: // ARROW RIGHT
-      game.ship.inertia();
-      break;
-      default:
-      break;
+    
+    const gameOver = () => {
+      clearInterval(game.interval);
     }
-  };
-  
+    
+    startGame();
+    
+    document.onkeydown = (e) => {
+      e.preventDefault();
+
+      switch(e.keyCode) {
+        case 65: // "A"
+        case 37: // ARROW LEFT 
+        clearInterval(game.ship.inertiaInterval);
+        game.ship.fireTurnThruster(-7.5);
+        break;
+        case 87: // "W" 
+        case 38: // ARROW UP
+        clearInterval(game.ship.inertiaInterval);
+        game.ship.fireThruster(0.7);
+        break;
+        case 68: // "D"
+        case 39: // ARROW RIGHT
+        clearInterval(game.ship.inertiaInterval);
+        game.ship.fireTurnThruster(7.5);
+        break;
+        case 32: // SPACE
+        game.shots.push(game.ship.pewPewPew());
+        break;
+        default:
+        break;
+      }
+    };
+    
+    document.onkeyup = (e) => {
+      switch(e.keyCode) {
+        case 65: // "A"
+        case 37: // ARROW LEFT 
+        case 87: // "W" 
+        case 38: // ARROW UP
+        case 68: // "D"
+        case 39: // ARROW RIGHT
+        game.ship.inertia();
+        break;
+        default:
+        break;
+      }
+    };
+    

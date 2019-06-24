@@ -49,6 +49,8 @@ class Space {
     this.ctx.lineTo(500, this.canvas.height);
     this.ctx.moveTo(600, 0);
     this.ctx.lineTo(600, this.canvas.height);
+    this.ctx.moveTo(700, 0);
+    this.ctx.lineTo(700, this.canvas.height);
     this.ctx.stroke();
     this.ctx.closePath();
   }
