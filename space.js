@@ -26,6 +26,37 @@ class Space {
     this.ctx.drawImage(this.img, 0, 0, this.canvas.width, this.canvas.height);
   }
 
+  printScore(score) {
+    this.ctx.beginPath();
+    this.ctx.font = "20px Verdana bold";
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText(`SCORE: ${score}`, 10, 25);
+    this.ctx.closePath();
+  }
+
+  timeWarp(pause) {
+    if (pause === false) {
+      clearInterval(game.interval);
+      this.ctx.beginPath();
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.font = "40px Verdana bold";
+      this.ctx.fillStyle = 'white';
+      this.ctx.fillText('PAUSED', this.canvas.width / 2 - 70, this.canvas.height / 2);
+      this.ctx.closePath();
+      return false;
+    } else {
+      return setInterval(() => {
+        animateIt();
+        if (game.frames > 400) {
+          game.frames = 0;
+        } else {
+          game.frames += 1;
+        }
+      }, 15);
+    }
+  }
+
   setLines() {
     this.ctx.beginPath();
     this.ctx.strokeStyle = 'yellow';

@@ -95,6 +95,7 @@ class Ship {
   
   inertia() {
     this.speedingUp = false;
+    this.turnSpeed = 0;
     // this.speedX = 0;
     // this.speedY = 0;
     //   let stopCounter = 0;
@@ -131,7 +132,8 @@ class Ship {
 
     if (x + 12.5 > asteroid.x && x - 12.5 < astXSized) {
       if(y + 12.5 < astYSized && y - 12.5 > asteroid.y) {
-        // console.log(this, '\n', asteroid);
+        this.ctx.strokeStyle = 'yellow';
+        this.ctx.strokeRect(asteroid.x, asteroid.y, asteroid.size, asteroid.size);
         return true;
       }
     }

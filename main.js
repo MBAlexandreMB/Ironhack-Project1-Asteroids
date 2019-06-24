@@ -5,9 +5,12 @@ let game = {
   asteroidImg: [new Image(), new Image()],
   asteroidBelt: [],
   shots: [],
+  cannonCooled: true,
   interval: 0,
   frames: 0,
   randomCounter: 0,
+  score: 0,
+  pause: true,
 };
 
 const startGame = () => {
@@ -34,14 +37,8 @@ const startGame = () => {
         createNewAsteroid();
       }
       game.frames = 0;
-      game.interval = setInterval(() => {
-        animateIt();
-        if (game.frames > 400) {
-          game.frames = 0;
-        } else {
-          game.frames += 1;
-        }
-      }, 15);
+      game.interval = game.space.timeWarp(game.pause);
+      game.pause = false; 
     };
   };
   
@@ -93,10 +90,10 @@ const startGame = () => {
       game.space.setBackground();
       // game.space.setLines();
       game.ship.update();
-      if (game.frames % 400 == 0) {
-        for (let x = 0; x < 5; x += 1){
+      if (game.frames % 100 == 0) {
+        // for (let x = 0; x < 5; x += 1){
           createNewAsteroid();
-        }
+        // }
       }
       game.asteroidBelt.forEach((asteroid, index) => { 
         asteroid.update(); 
@@ -104,10 +101,19 @@ const startGame = () => {
         game.ship.checkForImpact(asteroid) ? gameOver() : false; 
       });
 
-      game.shots.forEach((shot, index) => {
+      game.shots.forEach((shot, sindex) => {
         shot.update();
-        shot.remove() ? game.shots.splice(index, 1) : false;
+        shot.remove() ? game.shots.splice(sindex, 1) : false;
+        game.asteroidBelt.some((asteroid, aindex) => {
+          if (asteroid.checkShot(shot)) { 
+            game.asteroidBelt.splice(aindex, 1);
+            game.shots.splice(sindex, 1);
+            game.score += 1;
+          }
+            
+        });
       });
+      game.space.printScore(game.score);
     }
     
     const gameOver = () => {
@@ -117,7 +123,9 @@ const startGame = () => {
     startGame();
     
     document.onkeydown = (e) => {
-      e.preventDefault();
+      if (e.keyCode === 32 || e.keyCode === 18) {
+        e.preventDefault();
+      }
 
       switch(e.keyCode) {
         case 65: // "A"
@@ -136,7 +144,17 @@ const startGame = () => {
         game.ship.fireTurnThruster(7.5);
         break;
         case 32: // SPACE
-        game.shots.push(game.ship.pewPewPew());
+        if (game.cannonCooled === true) {
+          game.shots.push(game.ship.pewPewPew());
+          game.cannonCooled = false;
+          setTimeout(() => {
+            game.cannonCooled = true;
+          }, 500);
+        }
+        break;
+        case 13:
+            game.interval = game.space.timeWarp(game.pause);
+            game.pause = game.pause ? false : true;   
         break;
         default:
         break;

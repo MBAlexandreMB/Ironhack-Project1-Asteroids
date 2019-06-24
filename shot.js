@@ -3,8 +3,8 @@ class Shot {
     this.x = x;
     this.y = y;
     this.degree = degree - 90;
-    this.speedX = 10 * Math.cos(this.degree * Math.PI / 180);
-    this.speedY = 10 * Math.sin(this.degree * Math.PI / 180);
+    this.speedX = 5 * Math.cos(this.degree * Math.PI / 180);
+    this.speedY = 5 * Math.sin(this.degree * Math.PI / 180);
 
     this.gameCanvas = canvas;
     this.ctx = canvasContext;
@@ -12,7 +12,6 @@ class Shot {
   }
 
   update() {
-    console.log('entrou');
     this.move();
     this.ctx.beginPath();
     this.ctx.fillStyle = 'blue';
