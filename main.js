@@ -10,13 +10,15 @@ let game = {
 };
 
 const startGame = () => {
-  game.shipImgs[0].src = './images/shipr.png';
-  // game.shipImgs[0].src = './images/shipback.png';
+  // game.shipImgs[0].src = './images/shipr.png';
+  game.shipImgs[0].src = './images/shipback.png';
   game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
   game.shipImgs[1].src = './images/shipwfirer.png'
   game.shipImgs[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
-  game.asteroidImg[0].src = './images/Asteroid1.png';
-  game.asteroidImg[1].src = './images/Asteroid2.png';
+  // game.asteroidImg[0].src = './images/Asteroid1.png';
+  // game.asteroidImg[1].src = './images/Asteroid2.png';
+  game.asteroidImg[0].src = './images/Asteroid1back.png';
+  game.asteroidImg[1].src = './images/Asteroid2back.png';
   game.shipImgs[0].onload = () => {
     game.ship = new Ship(
       game.space.canvas.width / 2, 
