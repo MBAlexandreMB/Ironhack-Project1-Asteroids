@@ -5,6 +5,7 @@ let game = {
   asteroidImg: [new Image(), new Image()],
   asteroidBelt: [],
   shots: [],
+  shotImg: [new Image(), new Image(), new Image(), new Image(), new Image(), new Image(), new Image(), new Image(), new Image()],
   cannonCooled: true,
   interval: 0,
   frames: 0,
