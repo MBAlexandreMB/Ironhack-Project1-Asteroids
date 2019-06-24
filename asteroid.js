@@ -18,12 +18,12 @@ class Asteroid {
 
   update() {
     this.move();
-    this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI, false);
-    // this.ctx.fill();
-    this.ctx.stroke();
-    this.ctx.closePath();
-    //this.ctx.drawImage(this.img, this.x, this.y, this.size / 2, this.size / 2);
+    // this.ctx.beginPath();
+    // this.ctx.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI, false);
+    // // this.ctx.fill();
+    // this.ctx.stroke();
+    // this.ctx.closePath();
+    this.ctx.drawImage(this.img, this.x, this.y, this.size, this.size);
   }
 
   remove() {

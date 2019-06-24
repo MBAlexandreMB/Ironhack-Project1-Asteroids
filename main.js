@@ -2,7 +2,7 @@ let game = {
   space: new Space(),
   ship: 0,
   shipImgs: [new Image(), new Image()],
-  asteroidImg: new Image(),
+  asteroidImg: [new Image(), new Image()],
   asteroidBelt: [],
   interval: 0,
   frames: 0,
@@ -10,11 +10,13 @@ let game = {
 };
 
 const startGame = () => {
-  game.shipImgs[0].src = './images/ship.png';
+  game.shipImgs[0].src = './images/shipr.png';
+  // game.shipImgs[0].src = './images/shipback.png';
   game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
-  game.shipImgs[1].src = './images/shipwfire.png'
+  game.shipImgs[1].src = './images/shipwfirer.png'
   game.shipImgs[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
-  game.asteroidImg.src = './images/asteroid.png';
+  game.asteroidImg[0].src = './images/Asteroid1.png';
+  game.asteroidImg[1].src = './images/Asteroid2.png';
   game.shipImgs[0].onload = () => {
     game.ship = new Ship(
       game.space.canvas.width / 2, 
@@ -31,7 +33,11 @@ const startGame = () => {
       game.frames = 0;
       game.interval = setInterval(() => {
         animateIt();
-        game.frames += 1;
+        if (game.frames > 400) {
+          game.frames = 0;
+        } else {
+          game.frames += 1;
+        }
       }, 15);
     };
   };
@@ -75,12 +81,14 @@ const startGame = () => {
       randomSize, 
       game.space.canvas,
       game.space.ctx, 
-      game.asteroidImg));  
+      game.asteroidImg[Math.floor(Math.random() * 2)]));  
   };
   
   
   const animateIt = () => {
     game.space.wipeOut();
+    game.space.setBackground();
+    // game.space.setLines();
     game.ship.update();
     if (game.frames % 400 == 0) {
       for (let x = 0; x < 5; x += 1){
@@ -89,8 +97,13 @@ const startGame = () => {
     }
     game.asteroidBelt.forEach((asteroid, index) => { 
       asteroid.update(); 
-      asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false; 
+      asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false;
+      game.ship.checkForImpact(asteroid) ? gameOver() : false; 
     });
+  }
+
+  const gameOver = () => {
+    clearInterval(game.interval);
   }
   
   startGame();

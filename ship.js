@@ -14,6 +14,7 @@ class Ship {
     
     this.width = 25;
     this.height = 25;
+    this.perimeter = (2 * Math.PI) * (this.width / 2);
     this.gameCanvas = canvas;
     this.ctx = canvasContext;
     this.img = image;
@@ -24,7 +25,7 @@ class Ship {
     this.move();
     this.ctx.save();    
     // move to the center of the canvas
-    this.ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+    this.ctx.translate(this.x + this.width / 2 - 13, this.y + this.height / 2 - 13);
     // rotate the canvas to the specified degrees
     this.ctx.rotate(this.radian*Math.PI);
     // draw the image
@@ -34,6 +35,11 @@ class Ship {
     } else {
       this.ctx.drawImage(this.img[1], 0, 0, this.width, this.height + 9);
     }
+    // if (this.speedingUp === false) {
+    //   this.ctx.drawImage(this.img[0], this.x, this.y, this.width, this.height);
+    // } else {
+    //   this.ctx.drawImage(this.img[1], this.x, this.y, this.width, this.height + 9);
+    // }
     // we’re done with the rotating so restore the unrotated ctx
     this.ctx.restore();
   }
@@ -125,5 +131,27 @@ class Ship {
     //     console.log(`Sx: ${this.speedX} | Sy: ${this.speedY}`);
     //   }, 15);
     // }  
+  }
+
+  checkForImpact(asteroid) {
+    let sizeX = this.width / 2;
+    let sizeY = this.height / 2;
+    let x = this.x + (sizeX * -Math.cos(this.radian));
+    let y = this.y - (sizeY * Math.sin(this.radian));
+
+    let astXSized = asteroid.x + asteroid.size;
+    let astYSized = asteroid.y + asteroid.size;
+
+    // Se o x + size de um asteroid tocar o x - size da nave
+    // Ou se o x de um asteroid tocar o x + size da nave
+    if ((x - sizeX < astXSized && x - sizeX > asteroid.x) || 
+    (x + sizeX > asteroid.x && x + sizeX < astXSized)) {
+
+      if ((y - sizeY < astYSized && y - sizeY > asteroid.y) || 
+      (y + sizeY > asteroid.y && y + sizeY < astYSized)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
