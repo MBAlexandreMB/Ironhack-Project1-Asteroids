@@ -10,12 +10,12 @@ class Asteroid {
     this.ctx = canvasContext;
     this.img = img;
   }
-
+  
   move() {
     this.x += this.speedX;
     this.y += this.speedY;
   }
-
+  
   update() {
     this.move();
     this.ctx.drawImage(this.img, this.x, this.y, this.size, this.size);
@@ -25,7 +25,7 @@ class Asteroid {
     // this.ctx.stroke();
     // this.ctx.closePath();
   }
-
+  
   remove() {
     if (this.x > this.gameCanvas.width ||
       this.x + this.size < 0 ||
@@ -33,18 +33,25 @@ class Asteroid {
       this.y + this.size < 0) {
         return true;
       }
-    return false;
-  }
-
-  checkShot(shot) {
-    // this.ctx.strokeStyle = 'yellow';
-    // this.ctx.strokeRect(this.x, this.y, this.size, this.size);
-
-    if (this.x < shot.x && this.x + this.size > shot.x) {
-      if (this.y < shot.y && this.y + this.size > shot.y) {
+      return false;
+    }
+    
+    breakInHalf() {
+      if (this.size >= 70) {
         return true;
       }
+      return false;
     }
-    return false;
+    
+    checkShot(shot) {
+      // this.ctx.strokeStyle = 'yellow';
+      // this.ctx.strokeRect(this.x, this.y, this.size, this.size);
+      
+      if (this.x < shot.x && this.x + this.size > shot.x) {
+        if (this.y < shot.y && this.y + this.size > shot.y) {
+          return true;
+        }
+      }
+      return false;
+    }
   }
-}

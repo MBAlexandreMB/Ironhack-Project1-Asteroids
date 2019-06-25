@@ -5,7 +5,6 @@ let game = {
   asteroidImg: [new Image(), new Image()],
   asteroidBelt: [],
   shots: [],
-  shotImg: [new Image(), new Image(), new Image(), new Image(), new Image(), new Image(), new Image(), new Image(), new Image()],
   cannonCooled: true,
   interval: 0,
   frames: 0,
@@ -14,7 +13,7 @@ let game = {
   pause: true,
 };
 
-const startGame = () => {
+const loadImages = () => {
   game.shipImgs[0].src = './images/shipr.png';
   // game.shipImgs[0].src = './images/shipback.png';
   game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
@@ -24,6 +23,10 @@ const startGame = () => {
   game.asteroidImg[1].src = './images/Asteroid2.png';
   // game.asteroidImg[0].src = './images/Asteroid1back.png';
   // game.asteroidImg[1].src = './images/Asteroid2back.png';
+}
+
+const startGame = () => {
+  loadImages();
   game.shipImgs[0].onload = () => {
     game.ship = new Ship(
       game.space.canvas.width / 2, 
@@ -43,137 +46,149 @@ const startGame = () => {
     };
   };
   
-  const createNewAsteroid = () => {
-    let randomSize = Math.floor(Math.random() * (100 - 35) + 35);
-    let randomX = Math.floor(Math.random() * game.space.canvas.width);
-    let randomY = Math.floor(Math.random() * game.space.canvas.height);
-    let randomSpeedX = 0;
-    let randomSpeedY = 0;
-    let luckyDirection = Math.random() < 0.5 ? -1 : 1;
-    
-    if (game.randomCounter === 0) {
-      if (randomX < game.space.canvas.width / 2) {
-        randomX = 0 - randomSize;
-        randomSpeedX = Math.random() * (1 - 0.5) + 0.5;
-        randomSpeedY = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
-      } else {
-        randomX = game.space.canvas.width + randomSize;
-        randomSpeedX = -(Math.random() * (1 - 0.5) + 0.5);
-        randomSpeedY = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
-      }
-      game.randomCounter = 1;
-    } else {
-      if (randomY < game.space.canvas.height / 1) {
-        randomY = 0 - randomSize;
-        randomSpeedY = Math.random() * (1 - 0.5) + 0.5;
-        randomSpeedX = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
-      } else {
-        randomY = game.space.canvas.height + randomSize;
-        randomSpeedY = -(Math.random() * (1 - 0.5) + 0.5);
-        randomSpeedX = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
-      }
-      game.randomCounter = 0;
-    }      
-    game.asteroidBelt.push(new Asteroid(
-      randomX, 
-      randomY, 
-      randomSpeedX, 
-      randomSpeedY, 
-      randomSize, 
-      game.space.canvas,
-      game.space.ctx, 
-      game.asteroidImg[Math.floor(Math.random() * 2)]));  
-    };
-    
-    
-    const animateIt = () => {
-      game.space.wipeOut();
-      game.space.setBackground();
-      // game.space.setLines();
-      game.ship.update();
-      if (game.frames % 100 == 0) {
-        // for (let x = 0; x < 5; x += 1){
-          createNewAsteroid();
-        // }
-      }
-      game.asteroidBelt.forEach((asteroid, index) => { 
-        asteroid.update(); 
-        asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false;
-        game.ship.checkForImpact(asteroid) ? gameOver() : false; 
-      });
-
-      game.shots.forEach((shot, sindex) => {
-        shot.update();
-        shot.remove() ? game.shots.splice(sindex, 1) : false;
-        game.asteroidBelt.some((asteroid, aindex) => {
-          if (asteroid.checkShot(shot)) { 
-            game.asteroidBelt.splice(aindex, 1);
-            game.shots.splice(sindex, 1);
-            game.score += 1;
+  const createNewAsteroid = (
+    randomX = Math.floor(Math.random() * game.space.canvas.width),
+    randomY = Math.floor(Math.random() * game.space.canvas.height),
+    randomSize = Math.floor(Math.random() * (100 - 35) + 35),
+    randomlyCreated = true
+    ) => {
+      let randomSpeedX = 0;
+      let randomSpeedY = 0;
+      let luckyDirection = Math.random() < 0.5 ? -1 : 1;
+      
+      if (randomlyCreated === true) {
+        if (game.randomCounter === 0) {
+          if (randomX < game.space.canvas.width / 2) {
+            randomX = 0 - randomSize;
+            randomSpeedX = Math.random() * (1 - 0.5) + 0.5;
+            randomSpeedY = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
+          } else {
+            randomX = game.space.canvas.width + randomSize;
+            randomSpeedX = -(Math.random() * (1 - 0.5) + 0.5);
+            randomSpeedY = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
           }
-            
-        });
-      });
-      game.space.printScore(game.score);
-    }
-    
-    const gameOver = () => {
-      clearInterval(game.interval);
-    }
-    
-    startGame();
-    
-    document.onkeydown = (e) => {
-      if (e.keyCode === 32 || e.keyCode === 18) {
-        e.preventDefault();
+          game.randomCounter = 1;
+        } else {
+          if (randomY < game.space.canvas.height / 1) {
+            randomY = 0 - randomSize;
+            randomSpeedY = Math.random() * (1 - 0.5) + 0.5;
+            randomSpeedX = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
+          } else {
+            randomY = game.space.canvas.height + randomSize;
+            randomSpeedY = -(Math.random() * (1 - 0.5) + 0.5);
+            randomSpeedX = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
+          }
+          game.randomCounter = 0;
+        }      
+      } else {
+        randomSpeedX = Math.random() * (1 - 0.5) + 0.5 * luckyDirection;
+        luckyDirection = Math.random() < 0.5 ? -1 : 1;
+        randomSpeedY = (Math.random() * (1 - 0.5) + 0.5) * luckyDirection;
       }
-
-      switch(e.keyCode) {
-        case 65: // "A"
-        case 37: // ARROW LEFT 
-        clearInterval(game.ship.inertiaInterval);
-        game.ship.fireTurnThruster(-7.5);
-        break;
-        case 87: // "W" 
-        case 38: // ARROW UP
-        clearInterval(game.ship.inertiaInterval);
-        game.ship.fireThruster(0.7);
-        break;
-        case 68: // "D"
-        case 39: // ARROW RIGHT
-        clearInterval(game.ship.inertiaInterval);
-        game.ship.fireTurnThruster(7.5);
-        break;
-        case 32: // SPACE
-        if (game.cannonCooled === true) {
-          game.shots.push(game.ship.pewPewPew());
-          game.cannonCooled = false;
-          setTimeout(() => {
-            game.cannonCooled = true;
-          }, 500);
+      game.asteroidBelt.push(new Asteroid(
+        randomX, 
+        randomY, 
+        randomSpeedX, 
+        randomSpeedY, 
+        randomSize, 
+        game.space.canvas,
+        game.space.ctx, 
+        game.asteroidImg[Math.floor(Math.random() * 2)]));  
+      };
+      
+      
+      const animateIt = () => {
+        game.space.wipeOut();
+        game.space.setBackground();
+        // game.space.setLines();
+        game.ship.update();
+        if (game.frames % 100 == 0) {
+          // for (let x = 0; x < 5; x += 1){
+          createNewAsteroid();
+          // }
         }
-        break;
-        case 13:
-            game.interval = game.space.timeWarp(game.pause);
-            game.pause = game.pause ? false : true;   
-        break;
-        default:
-        break;
+        game.asteroidBelt.forEach((asteroid, index) => { 
+          asteroid.update(); 
+          asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false; 
+          game.ship.checkForImpact(asteroid) ? gameOver() : false; 
+        });
+        
+        game.shots.forEach((shot, sindex) => {
+          shot.update();
+          shot.remove() ? game.shots.splice(sindex, 1) : false;
+          game.asteroidBelt.some((asteroid, aindex) => {
+            if (asteroid.checkShot(shot)) { 
+              if(asteroid.breakInHalf()) {
+                createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, false);
+                createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, false);
+              }
+              game.asteroidBelt.splice(aindex, 1);
+              game.shots.splice(sindex, 1);
+              game.score += 1;
+            }
+            
+          });
+        });
+        game.space.printScore(game.score);
       }
-    };
-    
-    document.onkeyup = (e) => {
-      switch(e.keyCode) {
-        case 65: // "A"
-        case 37: // ARROW LEFT 
-        case 87: // "W" 
-        case 38: // ARROW UP
-        case 68: // "D"
-        case 39: // ARROW RIGHT
-        game.ship.inertia();
-        break;
-        default:
-        break;
+      
+      const gameOver = () => {
+        clearInterval(game.interval);
       }
-    };
-    
+      
+      startGame();
+      
+      document.onkeydown = (e) => {
+        if (e.keyCode === 32 || e.keyCode === 18) {
+          e.preventDefault();
+        }
+        
+        switch(e.keyCode) {
+          case 65: // "A"
+          case 37: // ARROW LEFT 
+          clearInterval(game.ship.inertiaInterval);
+          game.ship.fireTurnThruster(-7.5);
+          break;
+          case 87: // "W" 
+          case 38: // ARROW UP
+          clearInterval(game.ship.inertiaInterval);
+          game.ship.fireThruster(0.7);
+          break;
+          case 68: // "D"
+          case 39: // ARROW RIGHT
+          clearInterval(game.ship.inertiaInterval);
+          game.ship.fireTurnThruster(7.5);
+          break;
+          case 32: // SPACE
+          if (game.cannonCooled === true) {
+            game.shots.push(game.ship.pewPewPew());
+            game.cannonCooled = false;
+            setTimeout(() => {
+              game.cannonCooled = true;
+            }, 500);
+          }
+          break;
+          case 13:
+          game.interval = game.space.timeWarp(game.pause);
+          game.pause = game.pause ? false : true;   
+          break;
+          default:
+          break;
+        }
+      };
+      
+      document.onkeyup = (e) => {
+        switch(e.keyCode) {
+          case 65: // "A"
+          case 37: // ARROW LEFT 
+          case 87: // "W" 
+          case 38: // ARROW UP
+          case 68: // "D"
+          case 39: // ARROW RIGHT
+          game.ship.inertia();
+          break;
+          default:
+          break;
+        }
+      };
+      
