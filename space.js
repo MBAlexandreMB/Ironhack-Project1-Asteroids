@@ -6,10 +6,12 @@ class Space {
     this.ctx = this.canvas.getContext('2d');
     this.img = new Image()
     this.music = 0;
+    this.bhInterval = 0;
   }
-
+  
   bigBang() {
     let div = document.createElement('div');
+    div.id = 'canvas';
     this.canvas.style.border = '1px solid black';
     this.canvas.style.margin = '0 auto';
     div.appendChild(this.canvas);
@@ -18,15 +20,15 @@ class Space {
       document.querySelector('body').appendChild(div);
     }
   }
-
+  
   wipeOut() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
-
+  
   setBackground() {
     this.ctx.drawImage(this.img, 0, 0, this.canvas.width, this.canvas.height);
   }
-
+  
   printScore(score) {
     this.ctx.beginPath();
     this.ctx.font = "20px Verdana bold";
@@ -34,7 +36,7 @@ class Space {
     this.ctx.fillText(`SCORE: ${score}`, 10, 25);
     this.ctx.closePath();
   }
-
+  
   timeWarp(pause) {
     if (pause === false) {
       clearInterval(game.interval);
@@ -59,7 +61,33 @@ class Space {
       }, 15);
     }
   }
-
+  
+  blackHole (score) {
+    let counter = 0;
+    this.bhInterval = setInterval(() => {
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.beginPath();
+      this.ctx.font = '30px Verdana';
+      this.ctx.fillStyle = 'white';
+      this.ctx.fillText(`SCORE: ${score}`, this.canvas.width / 2 - 70, this.canvas.height / 2);
+      this.ctx.closePath();
+      counter += 1;
+      if(counter === 8) {
+        this.ctx.fillStyle = 'rgb(0, 0, 0)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.beginPath();
+        this.ctx.font = '30px Verdana';
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillText(`SCORE: ${score}`, this.canvas.width / 2 - 70, this.canvas.height / 2);
+        this.ctx.closePath();
+      }
+      else if(counter === 10) { 
+        clearInterval(this.bhInterval);
+      }
+    }, 1000);
+  }
+  
   setLines() {
     this.ctx.beginPath();
     this.ctx.strokeStyle = 'yellow';

@@ -3,8 +3,10 @@ let game = {
   ship: 0,
   shipImgs: [new Image(), new Image(), new Image(), new Image()],
   shipChangeFactor: 9,
+  shipCrashSound: new Audio('./sounds/Crash.mp3'),
   shotSound: new Audio('./sounds/Laser-Shot-1.mp3'),
   backgroundMusic: new Audio(),
+  gameOverMusic: new Audio('./sounds/music/Beginnings_Intro.mp3'),
   asteroidImg: [new Image(), new Image()],
   asteroidBelt: [],
   asteroidSound: new Audio('./sounds/Big Explosion Effect Sound.mp3'),
@@ -20,17 +22,41 @@ let game = {
 const loadSFX = () => {
   let randomShip = Math.random();
   let easterEggChance = 0.15;
-  game.backgroundMusic.src = randomShip > easterEggChance ? './sounds/music/H4rdcore Secret - Anamanaguchi.mp3' : './sounds/music/Star Wars - Millennium Falcon Suite (Theme).mp3';
+  // let easterEggChance = 1;
+  let possibleMusics = ['./sounds/music/H4rdcore Secret - Anamanaguchi.mp3', './sounds/music/Epic Music - Asteroid.mp3', './sounds/music/Star Wars - Millennium Falcon Suite (Theme).mp3'];
+  if (randomShip > easterEggChance) {
+    if (randomShip > ((1 - easterEggChance) / 2 + easterEggChance)) {
+      game.backgroundMusic.src = possibleMusics[0];
+      game.backgroundMusic.volume = 0.5;
+    } else {
+      game.backgroundMusic.src = possibleMusics[1];
+      game.backgroundMusic.volume = 1;
+    }
+  } else {
+    game.backgroundMusic.src = possibleMusics[2];
+    game.backgroundMusic.volume = 0.5;
+  }
   game.backgroundMusic.preload = 'auto';
   game.backgroundMusic.autoplay = true;
-  game.shipChangeFactor = randomShip > easterEggChance ? 9 : 2;
-  game.shipImgs[0].src = randomShip > easterEggChance ? './images/shipr.png' : './images/millenium.png';
-  game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
-  game.shipImgs[1].src = randomShip > easterEggChance ? './images/shipwfirer.png' : './images/milleniumwfire.png';  
-  game.shipImgs[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
   
-  game.asteroidImg[0].src = './images/Asteroid1.png';
-  game.asteroidImg[1].src = './images/Asteroid2.png';
+  
+  if(randomShip > easterEggChance) { 
+    game.shipChangeFactor = 9;
+    game.shipImgs[0].src = './images/shipr.png';
+    game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
+    game.shipImgs[1].src = './images/shipwfirer.png';  
+    game.shipImgs[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
+    game.asteroidImg[0].src = './images/Asteroid1.png';
+    game.asteroidImg[1].src = './images/Asteroid2.png';
+  } else {
+    game.shipImgs[0].src = './images/millenium.png';
+    game.shipImgs[1].src = './images/milleniumwfire.png'; 
+    game.asteroidImg[0].src = './images/deathstar.png';
+    game.asteroidImg[0].alt = 'Death Star by habione 404 from the Noun Project';
+    game.asteroidImg[1].src = './images/starfighter.png';
+    game.asteroidImg[1].alt = 'Tie Fighter by Linker from the Noun Project';
+    game.shipChangeFactor = 2;
+  } 
 }
 
 const startGame = () => {
@@ -118,7 +144,10 @@ const startGame = () => {
         game.asteroidBelt.forEach((asteroid, index) => { 
           asteroid.update(); 
           asteroid.remove() ? game.asteroidBelt.splice(index, 1) : false; 
-          game.ship.checkForImpact(asteroid) ? gameOver() : false; 
+          if(game.ship.checkForImpact(asteroid)) {
+            gameOver();
+            return;
+          } 
         });
         
         game.shots.forEach((shot, sindex) => {
@@ -139,12 +168,52 @@ const startGame = () => {
         });
         game.space.printScore(game.score);
       }
+
+      const credits = (score) => {
+        game.space.blackHole(score);
+        setTimeout(() => {
+          restart();
+        }, 15000);
+      }
+
+      const restart = () => {
+        game.gameOverMusic.currentTime = 0;
+        game.gameOverMusic.pause();
+
+        game = {
+          space: new Space(),
+          ship: 0,
+          shipImgs: [new Image(), new Image(), new Image(), new Image()],
+          shipChangeFactor: 9,
+          shipCrashSound: new Audio('./sounds/Crash.mp3'),
+          shotSound: new Audio('./sounds/Laser-Shot-1.mp3'),
+          backgroundMusic: new Audio(),
+          gameOverMusic: new Audio('./sounds/music/Gaia_in_Fog.mp3'),
+          asteroidImg: [new Image(), new Image()],
+          asteroidBelt: [],
+          asteroidSound: new Audio('./sounds/Big Explosion Effect Sound.mp3'),
+          shots: [],
+          cannonCooled: true,
+          interval: 0,
+          frames: 0,
+          randomCounter: 0,
+          score: 0,
+          pause: true,
+        };
+
+        document.querySelector('body').removeChild(document.getElementById('canvas'));
+        startGame();
+      }
       
       const gameOver = () => {
         clearInterval(game.interval);
+        game.shipCrashSound.play();
+        game.backgroundMusic.pause();
+        game.gameOverMusic.play();
+
+        credits(game.score);
       }
       
-      game.backgroundMusic.volume = 0.5;
       startGame();
       
       document.onkeydown = (e) => {
