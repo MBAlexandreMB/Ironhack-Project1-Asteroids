@@ -4,7 +4,8 @@ class Space {
     this.canvas.width = 800;
     this.canvas.height = 550;
     this.ctx = this.canvas.getContext('2d');
-    this.img = new Image();
+    this.img = new Image()
+    this.music = 0;
   }
 
   bigBang() {
@@ -44,8 +45,10 @@ class Space {
       this.ctx.fillStyle = 'white';
       this.ctx.fillText('PAUSED', this.canvas.width / 2 - 70, this.canvas.height / 2);
       this.ctx.closePath();
+      game.backgroundMusic.pause();
       return false;
     } else {
+      game.backgroundMusic.play();
       return setInterval(() => {
         animateIt();
         if (game.frames > 400) {

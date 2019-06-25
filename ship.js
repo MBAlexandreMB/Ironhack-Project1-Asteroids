@@ -33,7 +33,7 @@ class Ship {
     if (this.speedingUp === false) {
       this.ctx.drawImage(this.img[0],  -12.5, -12.5, this.width, this.height);
     } else {
-      this.ctx.drawImage(this.img[1], -12.5, -12.5, this.width, this.height + 9);
+      this.ctx.drawImage(this.img[1], -12.5, -12.5, this.width, this.height + game.shipChangeFactor);
     }
 
     this.ctx.restore();
@@ -141,7 +141,10 @@ class Ship {
     return false;
   }
 
-  pewPewPew() {
+  pewPewPew(shotSound) {
+    shotSound.pause();
+    shotSound.currentTime = 0;
+    shotSound.play();
     return new Shot(this.x - 12.5, this.y - 12.5, this.degree, this.gameCanvas, this.ctx);
   }
 }

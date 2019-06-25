@@ -38,6 +38,9 @@ class Asteroid {
     
     breakInHalf() {
       if (this.size >= 70) {
+        game.asteroidSound.pause();
+        game.asteroidSound.currentTime = 0;
+        game.asteroidSound.play();
         return true;
       }
       return false;

@@ -1,9 +1,13 @@
 let game = {
   space: new Space(),
   ship: 0,
-  shipImgs: [new Image(), new Image()],
+  shipImgs: [new Image(), new Image(), new Image(), new Image()],
+  shipChangeFactor: 9,
+  shotSound: new Audio('./sounds/Laser-Shot-1.mp3'),
+  backgroundMusic: new Audio(),
   asteroidImg: [new Image(), new Image()],
   asteroidBelt: [],
+  asteroidSound: new Audio('./sounds/Big Explosion Effect Sound.mp3'),
   shots: [],
   cannonCooled: true,
   interval: 0,
@@ -13,20 +17,24 @@ let game = {
   pause: true,
 };
 
-const loadImages = () => {
-  game.shipImgs[0].src = './images/shipr.png';
-  // game.shipImgs[0].src = './images/shipback.png';
+const loadSFX = () => {
+  let randomShip = Math.random();
+  let easterEggChance = 0.15;
+  game.backgroundMusic.src = randomShip > easterEggChance ? './sounds/music/H4rdcore Secret - Anamanaguchi.mp3' : './sounds/music/Star Wars - Millennium Falcon Suite (Theme).mp3';
+  game.backgroundMusic.preload = 'auto';
+  game.backgroundMusic.autoplay = true;
+  game.shipChangeFactor = randomShip > easterEggChance ? 9 : 2;
+  game.shipImgs[0].src = randomShip > easterEggChance ? './images/shipr.png' : './images/millenium.png';
   game.shipImgs[0].alt = 'spaceship by Zach Bogart from the Noun Project';
-  game.shipImgs[1].src = './images/shipwfirer.png'
+  game.shipImgs[1].src = randomShip > easterEggChance ? './images/shipwfirer.png' : './images/milleniumwfire.png';  
   game.shipImgs[1].alt = 'spaceship by Zach Bogart and Fire by Bohdan Burmich from the Noun Project';
+  
   game.asteroidImg[0].src = './images/Asteroid1.png';
   game.asteroidImg[1].src = './images/Asteroid2.png';
-  // game.asteroidImg[0].src = './images/Asteroid1back.png';
-  // game.asteroidImg[1].src = './images/Asteroid2back.png';
 }
 
 const startGame = () => {
-  loadImages();
+  loadSFX();
   game.shipImgs[0].onload = () => {
     game.ship = new Ship(
       game.space.canvas.width / 2, 
@@ -35,7 +43,7 @@ const startGame = () => {
       game.space.ctx, 
       game.shipImgs
       );
-      game.space.bigBang();
+      game.space.bigBang(game.backgroundMusic);
       game.frames = 400;
       for (let x = 0; x < 5; x += 1){
         createNewAsteroid();
@@ -136,6 +144,7 @@ const startGame = () => {
         clearInterval(game.interval);
       }
       
+      game.backgroundMusic.volume = 0.5;
       startGame();
       
       document.onkeydown = (e) => {
@@ -161,7 +170,7 @@ const startGame = () => {
           break;
           case 32: // SPACE
           if (game.cannonCooled === true) {
-            game.shots.push(game.ship.pewPewPew());
+            game.shots.push(game.ship.pewPewPew(game.shotSound));
             game.cannonCooled = false;
             setTimeout(() => {
               game.cannonCooled = true;
