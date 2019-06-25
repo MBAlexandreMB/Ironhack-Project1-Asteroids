@@ -172,7 +172,7 @@ const startGame = () => {
       const credits = (score) => {
         game.space.blackHole(score);
         setTimeout(() => {
-          restart();
+          // restart();
         }, 15000);
       }
 
@@ -188,7 +188,7 @@ const startGame = () => {
           shipCrashSound: new Audio('./sounds/Crash.mp3'),
           shotSound: new Audio('./sounds/Laser-Shot-1.mp3'),
           backgroundMusic: new Audio(),
-          gameOverMusic: new Audio('./sounds/music/Gaia_in_Fog.mp3'),
+          gameOverMusic: new Audio('./sounds/music/Beginnings_Intro.mp3'),
           asteroidImg: [new Image(), new Image()],
           asteroidBelt: [],
           asteroidSound: new Audio('./sounds/Big Explosion Effect Sound.mp3'),
@@ -269,4 +269,3 @@ const startGame = () => {
           break;
         }
       };
-      

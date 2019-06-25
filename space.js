@@ -64,26 +64,32 @@ class Space {
   
   blackHole (score) {
     let counter = 0;
+    this.checkRestartButton();
     this.bhInterval = setInterval(() => {
       this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.beginPath();
       this.ctx.font = '30px Verdana';
       this.ctx.fillStyle = 'white';
-      this.ctx.fillText(`SCORE: ${score}`, this.canvas.width / 2 - 70, this.canvas.height / 2);
+      this.ctx.fillText(`SCORE: ${score}`, this.canvas.width / 2 - 65, this.canvas.height / 2 - 10);
       this.ctx.closePath();
       counter += 1;
-      if(counter === 8) {
+      if(counter >= 5) {
         this.ctx.fillStyle = 'rgb(0, 0, 0)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.beginPath();
         this.ctx.font = '30px Verdana';
         this.ctx.fillStyle = 'white';
-        this.ctx.fillText(`SCORE: ${score}`, this.canvas.width / 2 - 70, this.canvas.height / 2);
+        this.ctx.fillText(`SCORE: ${score}`, 335, 267.5);
         this.ctx.closePath();
-      }
-      else if(counter === 10) { 
-        clearInterval(this.bhInterval);
+        
+        this.ctx.fillStyle = 'tomato';
+        this.ctx.fillRect(300, 297.5, 200, 50);
+        this.ctx.font = '30px Verdana';
+        this.ctx.fillStyle = 'white';
+        this.ctx.beginPath();
+        this.ctx.fillText('Restart', 357, 331);
+        this.ctx.closePath();
       }
     }, 1000);
   }
@@ -116,4 +122,16 @@ class Space {
     this.ctx.stroke();
     this.ctx.closePath();
   }
-}
+  
+  
+  checkRestartButton() {
+    this.canvas.addEventListener('mouseup', (e) => {
+      if(e.clientY >= 308 && 
+        e.clientY <= 347 && 
+        e.clientX >= 354 && 
+        e.clientX <= 550) {
+          restart();
+        }
+      });
+    }    
+  }
