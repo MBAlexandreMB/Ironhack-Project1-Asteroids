@@ -4,7 +4,7 @@ class Space {
     this.canvas.width = 800;
     this.canvas.height = 550;
     this.ctx = this.canvas.getContext('2d');
-    this.img = new Image()
+    this.img = new Image();
     this.music = 0;
     this.bhInterval = 0;
   }
