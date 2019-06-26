@@ -38,31 +38,37 @@ class Space {
   }
   
   timeWarp(pause) {
-    if (pause === false) {
-      clearInterval(game.interval);
-      this.ctx.beginPath();
-      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.font = "40px Verdana bold";
-      this.ctx.fillStyle = 'white';
-      this.ctx.fillText('PAUSED', this.canvas.width / 2 - 70, this.canvas.height / 2);
-      this.ctx.closePath();
-      game.backgroundMusic.pause();
-      return false;
-    } else {
-      game.backgroundMusic.play();
-      return setInterval(() => {
-        animateIt();
-        if (game.frames > 400) {
-          game.frames = 0;
-        } else {
-          game.frames += 1;
-        }
-      }, 15);
+    game.loadingMusic.pause();
+    if(game.endGame === false) {
+      if (pause === false) {
+        clearInterval(game.interval);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.font = "40px Verdana bold";
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillText('PAUSED', this.canvas.width / 2 - 70, this.canvas.height / 2);
+        this.ctx.closePath();
+        game.backgroundMusic.pause();
+        return false;
+      } else {
+        game.backgroundMusic.play();
+        return setInterval(() => {
+          animateIt();
+          if (game.frames > 400) {
+            game.frames = 0;
+          } else {
+            game.frames += 1;
+          }
+        }, 15);
+      }
     }
   }
   
   blackHole (score) {
+    game.endGame = true;
+    keydown = 0;
+    keyup = 0;
     let counter = 0;
     this.checkRestartButton();
     this.bhInterval = setInterval(() => {
@@ -78,6 +84,7 @@ class Space {
         this.ctx.fillStyle = 'rgb(0, 0, 0)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.beginPath();
+        this.ctx.drawImage(game.logo, 150, 100, 500, 115);
         this.ctx.font = '30px Verdana';
         this.ctx.fillStyle = 'white';
         this.ctx.fillText(`SCORE: ${score}`, 335, 267.5);
@@ -94,37 +101,26 @@ class Space {
     }, 1000);
   }
   
-  setLines() {
+  setLoadingPage(logo, music) {
+    music.play();
     this.ctx.beginPath();
-    this.ctx.strokeStyle = 'yellow';
-    this.ctx.moveTo(0, 100);
-    this.ctx.lineTo(this.canvas.width, 100);
-    this.ctx.moveTo(0, 200);
-    this.ctx.lineTo(this.canvas.width, 200);
-    this.ctx.moveTo(0, 300);
-    this.ctx.lineTo(this.canvas.width, 300);
-    this.ctx.moveTo(0, 400);
-    this.ctx.lineTo(this.canvas.width, 400);
-    this.ctx.moveTo(100, 0);
-    this.ctx.lineTo(100, this.canvas.height);
-    this.ctx.moveTo(200, 0);
-    this.ctx.lineTo(200, this.canvas.height);
-    this.ctx.moveTo(300, 0);
-    this.ctx.lineTo(300, this.canvas.height);
-    this.ctx.moveTo(400, 0);
-    this.ctx.lineTo(400, this.canvas.height);
-    this.ctx.moveTo(500, 0);
-    this.ctx.lineTo(500, this.canvas.height);
-    this.ctx.moveTo(600, 0);
-    this.ctx.lineTo(600, this.canvas.height);
-    this.ctx.moveTo(700, 0);
-    this.ctx.lineTo(700, this.canvas.height);
-    this.ctx.stroke();
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.drawImage(logo, 150, 150, 500, 115);
+    this.ctx.font = '20px Verdana';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText('Press ENTER to start', 312, 350);
     this.ctx.closePath();
   }
   
-  
   checkRestartButton() {
+     keydown = document.onkeydown = (e) => {
+      if(e.keyCode === 13) {
+        e.preventDefault();
+        restart();
+      } 
+    };
+
     this.canvas.addEventListener('mouseup', (e) => {
       if(e.clientY >= 308 && 
         e.clientY <= 347 && 

@@ -45,6 +45,10 @@ class Asteroid {
       }
       return false;
     }
+
+    breakIntoLittlePieces() {
+      
+    }
     
     checkShot(shot) {
       // this.ctx.strokeStyle = 'yellow';

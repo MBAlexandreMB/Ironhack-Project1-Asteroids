@@ -1,4 +1,8 @@
+let keydown = 0;
+let keyup = 0;
 let game = {
+  logo: new Image(),
+  loadingMusic: new Audio('./sounds/music/FeelinIt.mp3'),
   space: new Space(),
   ship: 0,
   shipImgs: [new Image(), new Image(), new Image(), new Image()],
@@ -17,6 +21,7 @@ let game = {
   randomCounter: 0,
   score: 0,
   pause: true,
+  endGame: false,
 };
 
 const loadSFX = () => {
@@ -37,7 +42,6 @@ const loadSFX = () => {
     game.backgroundMusic.volume = 0.5;
   }
   game.backgroundMusic.preload = 'auto';
-  game.backgroundMusic.autoplay = true;
   
   
   if(randomShip > easterEggChance) { 
@@ -57,11 +61,15 @@ const loadSFX = () => {
     game.asteroidImg[1].alt = 'Tie Fighter by Linker from the Noun Project';
     game.shipChangeFactor = 2;
   } 
+  game.logo.src = './images/logo.png';
+  game.gameOverMusic.loop = true;
+  game.loadingMusic.loop = true;
+  game.backgroundMusic.loop = true;
 }
 
 const startGame = () => {
   loadSFX();
-  game.shipImgs[0].onload = () => {
+  game.logo.onload = () => {
     game.ship = new Ship(
       game.space.canvas.width / 2, 
       game.space.canvas.height / 2, 
@@ -70,13 +78,8 @@ const startGame = () => {
       game.shipImgs
       );
       game.space.bigBang(game.backgroundMusic);
-      game.frames = 400;
-      for (let x = 0; x < 5; x += 1){
-        createNewAsteroid();
-      }
-      game.frames = 0;
-      game.interval = game.space.timeWarp(game.pause);
-      game.pause = false; 
+      game.space.setLoadingPage(game.logo, game.loadingMusic);
+      setListeners();
     };
   };
   
@@ -84,6 +87,7 @@ const startGame = () => {
     randomX = Math.floor(Math.random() * game.space.canvas.width),
     randomY = Math.floor(Math.random() * game.space.canvas.height),
     randomSize = Math.floor(Math.random() * (100 - 35) + 35),
+    randomImage = game.asteroidImg[Math.floor(Math.random() * 2)],
     randomlyCreated = true
     ) => {
       let randomSpeedX = 0;
@@ -127,7 +131,7 @@ const startGame = () => {
         randomSize, 
         game.space.canvas,
         game.space.ctx, 
-        game.asteroidImg[Math.floor(Math.random() * 2)]));  
+        randomImage));  
       };
       
       
@@ -156,31 +160,32 @@ const startGame = () => {
           game.asteroidBelt.some((asteroid, aindex) => {
             if (asteroid.checkShot(shot)) { 
               if(asteroid.breakInHalf()) {
-                createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, false);
-                createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, false);
+                createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, asteroid.img, false);
+                createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, asteroid.img, false);
               }
               game.asteroidBelt.splice(aindex, 1);
               game.shots.splice(sindex, 1);
               game.score += 1;
             }
-            
           });
         });
         game.space.printScore(game.score);
       }
-
+      
       const credits = (score) => {
         game.space.blackHole(score);
         setTimeout(() => {
           // restart();
         }, 15000);
       }
-
+      
       const restart = () => {
         game.gameOverMusic.currentTime = 0;
         game.gameOverMusic.pause();
-
+        
         game = {
+          logo: new Image(),
+          loadingMusic: new Audio('./sounds/music/FeelinIt.mp3'),
           space: new Space(),
           ship: 0,
           shipImgs: [new Image(), new Image(), new Image(), new Image()],
@@ -199,8 +204,9 @@ const startGame = () => {
           randomCounter: 0,
           score: 0,
           pause: true,
+          endGame: false,
         };
-
+        
         document.querySelector('body').removeChild(document.getElementById('canvas'));
         startGame();
       }
@@ -210,62 +216,65 @@ const startGame = () => {
         game.shipCrashSound.play();
         game.backgroundMusic.pause();
         game.gameOverMusic.play();
-
+        
         credits(game.score);
       }
       
       startGame();
       
-      document.onkeydown = (e) => {
-        if (e.keyCode === 32 || e.keyCode === 18) {
-          e.preventDefault();
-        }
-        
-        switch(e.keyCode) {
-          case 65: // "A"
-          case 37: // ARROW LEFT 
-          clearInterval(game.ship.inertiaInterval);
-          game.ship.fireTurnThruster(-7.5);
-          break;
-          case 87: // "W" 
-          case 38: // ARROW UP
-          clearInterval(game.ship.inertiaInterval);
-          game.ship.fireThruster(0.7);
-          break;
-          case 68: // "D"
-          case 39: // ARROW RIGHT
-          clearInterval(game.ship.inertiaInterval);
-          game.ship.fireTurnThruster(7.5);
-          break;
-          case 32: // SPACE
-          if (game.cannonCooled === true) {
-            game.shots.push(game.ship.pewPewPew(game.shotSound));
-            game.cannonCooled = false;
-            setTimeout(() => {
-              game.cannonCooled = true;
-            }, 500);
+      const setListeners = () => {
+        keydown = document.onkeydown = (e) => {
+          if (e.keyCode === 32 || e.keyCode === 18) {
+            e.preventDefault();
           }
-          break;
-          case 13:
-          game.interval = game.space.timeWarp(game.pause);
-          game.pause = game.pause ? false : true;   
-          break;
-          default:
-          break;
-        }
-      };
-      
-      document.onkeyup = (e) => {
-        switch(e.keyCode) {
-          case 65: // "A"
-          case 37: // ARROW LEFT 
-          case 87: // "W" 
-          case 38: // ARROW UP
-          case 68: // "D"
-          case 39: // ARROW RIGHT
-          game.ship.inertia();
-          break;
-          default:
-          break;
-        }
-      };
+          
+          switch(e.keyCode) {
+            case 65: // "A"
+            case 37: // ARROW LEFT 
+            clearInterval(game.ship.inertiaInterval);
+            game.ship.fireTurnThruster(-7.5);
+            break;
+            case 87: // "W" 
+            case 38: // ARROW UP
+            clearInterval(game.ship.inertiaInterval);
+            game.ship.fireThruster(0.7);
+            break;
+            case 68: // "D"
+            case 39: // ARROW RIGHT
+            clearInterval(game.ship.inertiaInterval);
+            game.ship.fireTurnThruster(7.5);
+            break;
+            case 32: // SPACE
+            if (game.cannonCooled === true) {
+              game.shots.push(game.ship.pewPewPew(game.shotSound));
+              game.cannonCooled = false;
+              setTimeout(() => {
+                game.cannonCooled = true;
+              }, 500);
+            }
+            break;
+            case 13:
+            game.interval = game.space.timeWarp(game.pause);
+            game.pause = game.pause ? false : true;   
+            break;
+            default:
+            break;
+          }
+        };
+        
+        keyup = document.onkeyup = (e) => {
+          switch(e.keyCode) {
+            case 65: // "A"
+            case 37: // ARROW LEFT 
+            case 87: // "W" 
+            case 38: // ARROW UP
+            case 68: // "D"
+            case 39: // ARROW RIGHT
+            game.ship.inertia();
+            break;
+            default:
+            break;
+          }
+        };
+      }
+       
