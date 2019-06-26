@@ -19,7 +19,7 @@ let game = {
   interval: 0,
   frames: 0,
   randomCounter: 0,
-  score: 0,
+  score: 90,
   pause: true,
   endGame: false,
 };
@@ -136,14 +136,12 @@ const startGame = () => {
       
       
       const animateIt = () => {
+        // console.log(game.asteroidBelt);
         game.space.wipeOut();
         game.space.setBackground();
-        // game.space.setLines();
         game.ship.update();
-        if (game.frames % 100 == 0) {
-          // for (let x = 0; x < 5; x += 1){
+        if (game.frames % (100 - (game.score > 90 ? 90 : game.score)) == 0) {
           createNewAsteroid();
-          // }
         }
         game.asteroidBelt.forEach((asteroid, index) => { 
           asteroid.update(); 
@@ -151,7 +149,7 @@ const startGame = () => {
           if(game.ship.checkForImpact(asteroid)) {
             gameOver();
             return;
-          } 
+          }
         });
         
         game.shots.forEach((shot, sindex) => {
@@ -162,6 +160,9 @@ const startGame = () => {
               if(asteroid.breakInHalf()) {
                 createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, asteroid.img, false);
                 createNewAsteroid(asteroid.x, asteroid.y, asteroid.size / 2, asteroid.img, false);
+                game.asteroidBelt.splice(aindex, 1);
+              } else {
+                breakIntoLittlePieces(asteroid.img, asteroid.x, asteroid.y); 
               }
               game.asteroidBelt.splice(aindex, 1);
               game.shots.splice(sindex, 1);
@@ -277,4 +278,27 @@ const startGame = () => {
           }
         };
       }
-       
+
+      const breakIntoLittlePieces = (img, x, y) => {
+        let destroyInterval = 0;
+        game.asteroidSound.play();
+        let cInc = 1;
+        let cDec = -1;
+        let counter = 0
+        destroyInterval = setInterval(() => {
+          game.space.ctx.globalAlpha = 0.5;
+          game.space.ctx.drawImage(img, x, y + 5 + cInc, 5, 5);
+          game.space.ctx.drawImage(img, x + 5 + cInc, y + cDec, 5, 5);
+          game.space.ctx.drawImage(img, x - 5 + cDec, y - 3 + cDec, 5, 5);
+          game.space.ctx.drawImage(img, x + 2 + cInc, y - 5 + cInc, 5, 5);
+          game.space.ctx.drawImage(img, x - 4 + cDec, y + 1 + cInc, 5, 5);
+          game.space.ctx.globalAlpha = 1;
+          counter += 1;
+          cInc += 1;
+          cDec -= 1;
+          if(counter === 150 || game.pause === true || game.endGame === true) {
+            clearInterval(destroyInterval);
+          }
+        }, 15);
+      }
+      

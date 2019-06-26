@@ -45,15 +45,8 @@ class Asteroid {
       }
       return false;
     }
-
-    breakIntoLittlePieces() {
-      
-    }
     
-    checkShot(shot) {
-      // this.ctx.strokeStyle = 'yellow';
-      // this.ctx.strokeRect(this.x, this.y, this.size, this.size);
-      
+    checkShot(shot) {   
       if (this.x < shot.x && this.x + this.size > shot.x) {
         if (this.y < shot.y && this.y + this.size > shot.y) {
           return true;
