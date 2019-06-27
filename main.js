@@ -21,7 +21,7 @@ let game = {
   interval: 0,
   frames: 0,
   randomCounter: 0,
-  score: 80,
+  score: 0,
   pause: true,
   endGame: false,
 };
