@@ -20,7 +20,7 @@ Incluí dois tipos de melhorias para a arma da nave: um tiro extra frontal e um 
 #### Músicas
 Tudo fica melhor com a trilha sonora certa. 
 
-Portanto, busquei escolher aquelas que deixariam a 'luta' mais eletrizante. E como uma música só fica massante para os que se aventurarem a jogar várias vezes, incluí várias:
+Portanto, busquei escolher aquelas que deixariam a 'luta' mais eletrizante. E como uma música só fica maçante para os que se aventurarem a jogar várias vezes, incluí várias:
 - Start screen: FeelinIt (Text Me Records / Bobby Renz) -> Youtube Audio Library
 - Background music 1: H4rdcore Secret (Anamanaguchi)
 - Background music 2: Asteroid (Nick Ingman, Terry Devine-King)
