@@ -19,11 +19,6 @@ class Asteroid {
   update() {
     this.move();
     this.ctx.drawImage(this.img, this.x, this.y, this.size, this.size);
-    // this.ctx.beginPath();
-    // this.ctx.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI, false);
-    // // this.ctx.fill();
-    // this.ctx.stroke();
-    // this.ctx.closePath();
   }
   
   remove() {
@@ -45,15 +40,8 @@ class Asteroid {
       }
       return false;
     }
-
-    breakIntoLittlePieces() {
-      
-    }
     
-    checkShot(shot) {
-      // this.ctx.strokeStyle = 'yellow';
-      // this.ctx.strokeRect(this.x, this.y, this.size, this.size);
-      
+    checkShot(shot) {   
       if (this.x < shot.x && this.x + this.size > shot.x) {
         if (this.y < shot.y && this.y + this.size > shot.y) {
           return true;

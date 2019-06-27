@@ -2,19 +2,19 @@ class Ship {
   constructor(x, y, canvas, canvasContext, image) {
     this.x = x;
     this.y = y;
-    // Front speed parameters
+
     this.speedX = 0;
     this.speedY = 0;
     this.maxSpeed = 3;
     this.speedingUp = false;
-    // Turn parameters
+
     this.degree = 0;
     this.turnSpeed = 0;
     this.maxTurnSpeed = 15;
     
     this.width = 25;
     this.height = 25;
-    // this.perimeter = (2 * Math.PI) * (this.width / 2);
+
     this.gameCanvas = canvas;
     this.ctx = canvasContext;
     this.img = image;
@@ -22,6 +22,8 @@ class Ship {
 
     this.sizeX = this.width / 2;
     this.sizeY = this.height / 2;
+
+    this.gun = 3;
   }
   
   update() {
@@ -96,32 +98,6 @@ class Ship {
   inertia() {
     this.speedingUp = false;
     this.turnSpeed = 0;
-    // this.speedX = 0;
-    // this.speedY = 0;
-    //   let stopCounter = 0;
-    //   this.inertiaInterval = setInterval(() => {
-    //     if (this.speedX > 0) {
-    //       this.speedX -= 1;
-    //     } else if (this.speedX < 0) {
-    //       this.speedX += 1;
-    //     } else {
-    //       stopCounter += 1;
-    //     }
-    
-    //     if (this.speedY > 0) {
-    //       this.speedY -= 1;
-    //     } else if (this.speedY < 0) {
-    //       this.speedY += 1;
-    //     } else {
-    //       stopCounter += 1;
-    //     }
-    
-    //     if (stopCounter === 2) {
-    //       clearInterval(this.inertiaInterval);
-    //     }
-    //     console.log(`Sx: ${this.speedX} | Sy: ${this.speedY}`);
-    //   }, 15);
-    // }  
   }
 
   checkForImpact(asteroid) {
@@ -141,10 +117,49 @@ class Ship {
     return false;
   }
 
+  checkForPowerUp(pwrUp) {
+    let x = this.x - 12.5;
+    let y = this.y - 12.5;
+    let puXSized = pwrUp.x + pwrUp.size;
+    let puYSized = pwrUp.y + pwrUp.size;
+
+    if (x - 12.5 < puXSized && x + 12.5 > pwrUp.x) {
+      if (y - 12.5 < puYSized && y + 12.5 > pwrUp.y) {
+        this.gun = pwrUp.type;
+        return true;
+      }
+    }
+    return false;
+  }
+
   pewPewPew(shotSound) {
     shotSound.pause();
     shotSound.currentTime = 0;
     shotSound.play();
-    return new Shot(this.x - 12.5, this.y - 12.5, this.degree, this.gameCanvas, this.ctx);
+    switch(this.gun) {
+      case 0:
+          game.shots.push(new Shot(this.x - 12.5, this.y - 12.5, this.degree, this.gameCanvas, this.ctx, this.gun));
+
+          game.shots.push(new Shot(
+            this.x - 12.5, 
+            this.y - 12.5, 
+            this.degree, 
+            this.gameCanvas, 
+            this.ctx, 
+            this.gun, 
+            5 * Math.cos((this.degree + 90) * Math.PI / 180), 
+            5 * Math.sin((this.degree + 90) * Math.PI / 180)
+            ));
+        break;
+      case 1:
+          game.shots.push(new Shot(this.x - 12.5 - 10, this.y - 12.5, this.degree, this.gameCanvas, this.ctx, this.gun));
+
+          game.shots.push(new Shot(this.x - 12.5 + 10, this.y - 12.5, this.degree, this.gameCanvas, this.ctx, this.gun));
+        break;
+      case 3: 
+      default:
+          game.shots.push(new Shot(this.x - 12.5, this.y - 12.5, this.degree, this.gameCanvas, this.ctx, this.gun));
+        break;
+    }
   }
 }
